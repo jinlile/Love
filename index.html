@@ -17,12 +17,13 @@
 
         body {
             font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-            background: #ffffff;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
 
         .container-wrapper {
@@ -38,6 +39,7 @@
             position: relative;
             width: 100vmin;
             height: 100vmin;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
         }
 
         .blessing-container {
@@ -48,15 +50,14 @@
 
         .blessing-text {
             position: absolute;
-            background: #e19bff;
+            background: linear-gradient(135deg, #e19bff 0%);
             padding: 0.625rem 0.9375rem;
             border-radius: 0.5rem;
             box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.2);
             font-weight: bold;
-            color: #333;
+            color: white;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 0.125rem solid #e19bff;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -66,12 +67,13 @@
             z-index: 10;
             opacity: 0;
             transform: scale(0);
+            
         }
 
         .blessing-text:hover {
             transform: scale(1.05);
             box-shadow: 0 0.375rem 1.25rem rgba(0, 0, 0, 0.3);
-            background: #d68aff;
+            background: linear-gradient(135deg, #d68aff 0%);
             z-index: 100;
         }
 
@@ -90,6 +92,7 @@
             box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
             z-index: 1000;
             transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
         }
 
         .music-control:hover {
@@ -116,7 +119,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #ffffff;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -126,8 +129,8 @@
         }
 
         .play-button {
-            background: #FFB6C1;
-            color: #333;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+            color: white;
             border: none;
             padding: 0.9375rem 1.875rem;
             font-size: 1.125rem;
@@ -139,13 +142,57 @@
         }
 
         .play-button:hover {
-            background: #ffa7b4;
+            background: linear-gradient(135deg, #ffa7b4 0%, #ff4d94 100%);
             transform: scale(1.05);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #764ba2;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .floating-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            color: rgba(255, 105, 180, 0.3);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         @media (max-width: 768px) {
             :root {
                 font-size: 14px;
+            }
+            .title {
+                font-size: 2rem;
             }
         }
 
@@ -153,10 +200,15 @@
             :root {
                 font-size: 12px;
             }
+            .title {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    
     <div class="container-wrapper">
         <div class="heart-container">
             <div class="blessing-container" id="container"></div>
@@ -170,25 +222,28 @@
     
     <!-- 背景音乐 -->
     <audio id="backgroundMusic" loop>
+        <!-- 如果找不到指定音乐文件，将使用默认音频 -->
         <source src="艾比利 - 一个人想着一个人(说唱版).mp3" type="audio/mpeg">
         您的浏览器不支持音频元素
     </audio>
     
     <!-- 播放覆盖层 -->
     <div class="play-overlay" id="playOverlay">
+        <h1 class="title"></h1>
         <button class="play-button" id="playButton">打开礼物</button>
     </div>
     
     <script>
-        // 祝福语数组
+        // 优化后的祝福语数组
         const blessings = [
             "好好爱自己", "记得吃水果", "保持好心情", "今天过得开心",
             "早点休息", "别熬夜", "顺顺利利", "梦想成真",
             "我想你了", "期待下一次见面", "每天都要元气满满", "好好吃饭",
             "注意保暖", "王者求躺", "吃鸡有麦别踢", "无畏契约来roll",
-            "王佳琪脑子有病", "光遇跑图", "金铲铲开铲", "猛兽派对钓鱼",
-            "愿你被世界温柔以待", "一切都会越来越好", "保持微笑", "你是最棒的",
-            "今天也要加油哦", "记得多喝水", "保持好心态", "未来可期"
+            "光遇跑图", "金铲铲开铲", "猛兽派对钓鱼", "愿你被世界温柔以待",
+            "王佳琪脑子有病", "保持微笑", "你是最棒的", "今天也要加油哦",
+            "记得多喝水", "保持好心态", "未来可期", "心想事成"
+
         ];
 
         class HeartBlessing {
@@ -235,6 +290,9 @@
                 this.playButton = document.getElementById('playButton');
                 this.isMusicPlaying = false;
                 
+                // 添加浮动心形
+                this.floatingHeartsContainer = document.getElementById('floatingHearts');
+                
                 this.init();
             }
             
@@ -257,7 +315,7 @@
                 const windowHeightPx = config.windowHeight * remToPx;
                 
                 // 计算心形的近似周长（使用较大的估算值）
-                const containerSize = this.container.offsetWidth;
+                const containerSize = this.container.offsetWidth || Math.min(window.innerWidth, window.innerHeight);
                 const heartCircumference = containerSize * 3.8; // 心形周长大约是宽度的3.8倍
                 
                 // 根据窗口高度和行高计算垂直间距
@@ -273,6 +331,7 @@
             }
             
             init() {
+                this.createFloatingHearts();
                 this.setupMusicControl();
                 this.attemptAutoPlay();
                 
@@ -288,6 +347,20 @@
                         setTimeout(() => this.start(), 500);
                     }
                 });
+            }
+            
+            createFloatingHearts() {
+                // 创建浮动心形背景
+                const heartCount = 15;
+                for (let i = 0; i < heartCount; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.innerHTML = '❤';
+                    heart.style.left = `${Math.random() * 100}%`;
+                    heart.style.animationDuration = `${15 + Math.random() * 10}s`;
+                    heart.style.animationDelay = `${Math.random() * 5}s`;
+                    this.floatingHeartsContainer.appendChild(heart);
+                }
             }
             
             setupMusicControl() {
@@ -324,6 +397,8 @@
                     this.musicControl.classList.remove('muted');
                 }).catch(error => {
                     console.log("播放失败:", error);
+                    // 如果音乐播放失败，继续显示祝福
+                    this.startBlessings();
                 });
             }
             
@@ -348,7 +423,7 @@
                 const points = [];
                 
                 // 心形容器尺寸
-                const containerSize = this.container.offsetWidth;
+                const containerSize = this.container.offsetWidth || Math.min(window.innerWidth, window.innerHeight);
                 
                 // 计算缩放比例 - 心形占容器的100%，完全贴边
                 const scale = containerSize / 35;
