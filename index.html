@@ -202,22 +202,31 @@
                 
                 // 设备尺寸配置 - 使用rem单位
                 this.deviceConfig = {
+                    small: { // 6.1英寸及以下
+                        windowWidth: 5, // rem - 窗口宽度
+                        windowHeight: 2.5, // rem - 窗口高度
+                        fontSize: 0.625, // rem - 字体大小
+                        lineHeight: 1.2 // 行高倍数
+                    },
                     medium: { // 6.3英寸左右
-                        windowCount: 15,
-                        windowWidth: 1.5, // rem
-                        windowHeight: 0.5, // rem
-                        fontSize: 0.6 // rem
+                        windowWidth: 5.625, // rem
+                        windowHeight: 2.8125, // rem
+                        fontSize: 0.6875, // rem
+                        lineHeight: 1.2 // 行高倍数
                     },
                     large: { // 6.7英寸及以上
-                        windowCount: 66,
                         windowWidth: 8.25, // rem
                         windowHeight: 4.125, // rem
-                        fontSize: 0.9 // rem
+                        fontSize: 0.9, // rem
+                        lineHeight: 1.2 // 行高倍数
                     }
                 };
                 
                 // 获取当前设备类型
                 this.currentDevice = this.getDeviceType();
+                
+                // 根据垂直间距计算窗口总数
+                this.windowCount = this.calculateWindowCount();
                 
                 // 音乐相关
                 this.backgroundMusic = document.getElementById('backgroundMusic');
@@ -239,6 +248,30 @@
                 return 'large';
             }
             
+            // 根据垂直间距计算合适的窗口总数
+            calculateWindowCount() {
+                const config = this.deviceConfig[this.currentDevice];
+                
+                // 将rem转换为px来计算窗口尺寸
+                const remToPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                const windowHeightPx = config.windowHeight * remToPx;
+                
+                // 计算心形的近似周长（使用较大的估算值）
+                const containerSize = this.container.offsetWidth;
+                const heartCircumference = containerSize * 3.8; // 心形周长大约是宽度的3.8倍
+                
+                // 根据窗口高度和行高计算垂直间距
+                // 下一个窗口的最上边贴着此窗口的文字底端
+                const lineHeightPx = config.fontSize * remToPx * config.lineHeight;
+                const verticalSpacing = lineHeightPx * 0.2; // 行高的一半作为垂直间距
+                
+                // 计算窗口总数
+                const windowCount = Math.floor(heartCircumference / (windowHeightPx + verticalSpacing));
+                
+                // 确保窗口数量在合理范围内
+                return Math.max(30, Math.min(80, windowCount));
+            }
+            
             init() {
                 this.setupMusicControl();
                 this.attemptAutoPlay();
@@ -248,6 +281,7 @@
                     this.blessingElements = [];
                     
                     this.currentDevice = this.getDeviceType();
+                    this.windowCount = this.calculateWindowCount();
                     
                     if (this.isAnimating) {
                         this.stop();
@@ -311,21 +345,20 @@
             }
             
             generateHeartPoints() {
-                const config = this.deviceConfig[this.currentDevice];
                 const points = [];
                 
                 // 心形容器尺寸
                 const containerSize = this.container.offsetWidth;
                 
-                // 计算缩放比例 - 心形占容器的90%，确保四周留空相同
-                const scale = (containerSize * 1) / 35;
+                // 计算缩放比例 - 心形占容器的100%，完全贴边
+                const scale = containerSize / 35;
                 
                 // 计算中心点 - 稍微向上偏移，避免底部被遮挡
                 const centerX = containerSize / 2;
                 const centerY = containerSize / 2 - containerSize * 0.06; // 向上偏移2%
                 
-                for (let i = 0; i < config.windowCount; i++) {
-                    const t = 2 * Math.PI * i / config.windowCount;
+                for (let i = 0; i < this.windowCount; i++) {
+                    const t = 2 * Math.PI * i / this.windowCount;
                     
                     // 心形方程
                     const x = 16 * Math.pow(Math.sin(t), 3);
@@ -349,6 +382,7 @@
                 element.style.width = `${config.windowWidth}rem`;
                 element.style.height = `${config.windowHeight}rem`;
                 element.style.fontSize = `${config.fontSize}rem`;
+                element.style.lineHeight = `${config.lineHeight}`;
                 
                 // 计算位置，使元素中心对准坐标点
                 const remToPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
