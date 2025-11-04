@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love</title>
+    <title>心形祝福</title>
     <style>
         * {
             margin: 0;
@@ -11,9 +11,13 @@
             box-sizing: border-box;
         }
 
+        :root {
+            font-size: 16px;
+        }
+
         body {
             font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+            background: #ffffff;
             min-height: 100vh;
             overflow: hidden;
             display: flex;
@@ -21,26 +25,38 @@
             align-items: center;
         }
 
-        .blessing-container {
+        .container-wrapper {
             position: relative;
             width: 100%;
             height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heart-container {
+            position: relative;
+            width: 100vmin;
+            height: 100vmin;
+        }
+
+        .blessing-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
         }
 
         .blessing-text {
             position: absolute;
             background: #e19bff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            font-size: 14px;
+            padding: 0.625rem 0.9375rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.2);
             font-weight: bold;
             color: #333;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid #e19bff;
-            width: 140px;
-            height: 70px;
+            border: 0.125rem solid #e19bff;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -54,24 +70,24 @@
 
         .blessing-text:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            background: #e19bff;
+            box-shadow: 0 0.375rem 1.25rem rgba(0, 0, 0, 0.3);
+            background: #d68aff;
             z-index: 100;
         }
 
         .music-control {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 1.25rem;
+            right: 1.25rem;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 3.125rem;
+            height: 3.125rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
             z-index: 1000;
             transition: all 0.3s ease;
         }
@@ -82,7 +98,7 @@
         }
 
         .music-icon {
-            font-size: 24px;
+            font-size: 1.5rem;
             color: #764ba2;
         }
 
@@ -100,13 +116,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: white(255, 255, 255, 0.7);
+            background: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            color: white;
-            font-size: 24px;
             flex-direction: column;
             text-align: center;
         }
@@ -115,23 +129,39 @@
             background: #FFB6C1;
             color: #333;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 30px;
+            padding: 0.9375rem 1.875rem;
+            font-size: 1.125rem;
+            border-radius: 1.875rem;
             cursor: pointer;
-            margin-top: 20px;
             font-weight: bold;
             transition: all 0.3s ease;
+            box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.2);
         }
 
         .play-button:hover {
             background: #ffa7b4;
             transform: scale(1.05);
         }
+
+        @media (max-width: 768px) {
+            :root {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="blessing-container" id="container"></div>
+    <div class="container-wrapper">
+        <div class="heart-container">
+            <div class="blessing-container" id="container"></div>
+        </div>
+    </div>
     
     <!-- 音乐控制按钮 -->
     <div class="music-control" id="musicControl">
@@ -140,14 +170,12 @@
     
     <!-- 背景音乐 -->
     <audio id="backgroundMusic" loop>
-        
         <source src="艾比利 - 一个人想着一个人(说唱版).mp3" type="audio/mpeg">
         您的浏览器不支持音频元素
     </audio>
     
     <!-- 播放覆盖层 -->
     <div class="play-overlay" id="playOverlay">
-        <p>请查收礼物</p>
         <button class="play-button" id="playButton">打开礼物</button>
     </div>
     
@@ -158,7 +186,9 @@
             "早点休息", "别熬夜", "顺顺利利", "梦想成真",
             "我想你了", "期待下一次见面", "每天都要元气满满", "好好吃饭",
             "注意保暖", "王者求躺", "吃鸡有麦别踢", "无畏契约来roll",
-            "王佳琪脑子有病", "光遇跑图", "金铲铲开铲", "猛兽派对钓鱼"
+            "王佳琪脑子有病", "光遇跑图", "金铲铲开铲", "猛兽派对钓鱼",
+            "愿你被世界温柔以待", "一切都会越来越好", "保持微笑", "你是最棒的",
+            "今天也要加油哦", "记得多喝水", "保持好心态", "未来可期"
         ];
 
         class HeartBlessing {
@@ -169,7 +199,27 @@
                 this.animationId = null;
                 this.blessingCount = 0;
                 this.currentIndex = 0;
-                this.windowCount = 64; // 窗口数量
+                
+                // 设备尺寸配置 - 使用rem单位
+                this.deviceConfig = {
+                    
+                    
+                    medium: { // 6.3英寸左右
+                        windowCount: 50,
+                        windowWidth: 5.625, // rem
+                        windowHeight: 2.8125, // rem
+                        fontSize: 0.6875 // rem
+                    },
+                    large: { // 6.7英寸及以上
+                        windowCount: 66,
+                        windowWidth: 8.25, // rem
+                        windowHeight: 4.125, // rem
+                        fontSize: 0.9 // rem
+                    }
+                };
+                
+                // 获取当前设备类型
+                this.currentDevice = this.getDeviceType();
                 
                 // 音乐相关
                 this.backgroundMusic = document.getElementById('backgroundMusic');
@@ -181,21 +231,38 @@
                 this.init();
             }
             
-            init() {
-                // 设置音乐控制
-                this.setupMusicControl();
+            getDeviceType() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                const diagonal = Math.sqrt(width * width + height * height) / 96;
                 
-                // 尝试自动播放音乐
+                if (diagonal <= 6.2) return 'small';
+                if (diagonal <= 6.6) return 'medium';
+                return 'large';
+            }
+            
+            init() {
+                this.setupMusicControl();
                 this.attemptAutoPlay();
+                
+                window.addEventListener('resize', () => {
+                    this.blessingElements.forEach(el => el.remove());
+                    this.blessingElements = [];
+                    
+                    this.currentDevice = this.getDeviceType();
+                    
+                    if (this.isAnimating) {
+                        this.stop();
+                        setTimeout(() => this.start(), 500);
+                    }
+                });
             }
             
             setupMusicControl() {
-                // 点击音乐控制按钮
                 this.musicControl.addEventListener('click', () => {
                     this.toggleMusic();
                 });
                 
-                // 点击播放按钮
                 this.playButton.addEventListener('click', () => {
                     this.startMusic();
                     this.playOverlay.style.display = 'none';
@@ -204,18 +271,15 @@
             }
             
             attemptAutoPlay() {
-                // 尝试自动播放音乐
                 const playPromise = this.backgroundMusic.play();
                 
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        // 自动播放成功
                         this.isMusicPlaying = true;
                         this.musicControl.classList.remove('muted');
                         this.playOverlay.style.display = 'none';
                         this.startBlessings();
                     }).catch(error => {
-                        // 自动播放被阻止，显示播放覆盖层
                         console.log("自动播放被阻止，需要用户交互");
                         this.playOverlay.style.display = 'flex';
                     });
@@ -245,32 +309,32 @@
             }
             
             startBlessings() {
-                // 开始创建爱心窗口
                 setTimeout(() => this.start(), 100);
             }
             
-            generateHeartPoints(count) {
+            generateHeartPoints() {
+                const config = this.deviceConfig[this.currentDevice];
                 const points = [];
-                const screenWidth = window.innerWidth;
-                const screenHeight = window.innerHeight;
                 
-                // 缩放比例 - 占屏幕65%
-                const scaleX = (screenWidth * 0.65) / 35;
-                const scaleY = (screenHeight * 0.65) / 25;
+                // 心形容器尺寸
+                const containerSize = this.container.offsetWidth;
                 
-                // 计算中心点
-                const centerX = screenWidth / 2;
-                const centerY = screenHeight / 2;
+                // 计算缩放比例 - 心形占容器的90%，确保四周留空相同
+                const scale = (containerSize * 1) / 35;
                 
-                for (let i = 0; i < count; i++) {
-                    const t = 2 * Math.PI * i / count;
+                // 计算中心点 - 稍微向上偏移，避免底部被遮挡
+                const centerX = containerSize / 2;
+                const centerY = containerSize / 2 - containerSize * 0.06; // 向上偏移2%
+                
+                for (let i = 0; i < config.windowCount; i++) {
+                    const t = 2 * Math.PI * i / config.windowCount;
                     
                     // 心形方程
                     const x = 16 * Math.pow(Math.sin(t), 3);
                     const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
                     
-                    const screenX = x * scaleX + centerX;
-                    const screenY = -y * scaleY + centerY;
+                    const screenX = x * scale + centerX;
+                    const screenY = -y * scale + centerY;
                     
                     points.push({ x: screenX, y: screenY });
                 }
@@ -278,16 +342,23 @@
             }
             
             createBlessingElement(blessing, x, y) {
+                const config = this.deviceConfig[this.currentDevice];
                 const element = document.createElement('div');
                 element.className = 'blessing-text';
                 element.textContent = blessing;
                 
-                // 计算位置，使元素中心对准坐标点
-                const elementWidth = 140;
-                const elementHeight = 70;
+                // 设置窗口大小和字体
+                element.style.width = `${config.windowWidth}rem`;
+                element.style.height = `${config.windowHeight}rem`;
+                element.style.fontSize = `${config.fontSize}rem`;
                 
-                element.style.left = `${x - elementWidth/2}px`;
-                element.style.top = `${y - elementHeight/2}px`;
+                // 计算位置，使元素中心对准坐标点
+                const remToPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                const elementWidthPx = config.windowWidth * remToPx;
+                const elementHeightPx = config.windowHeight * remToPx;
+                
+                element.style.left = `${x - elementWidthPx/2}px`;
+                element.style.top = `${y - elementHeightPx/2}px`;
                 
                 // 添加关闭功能
                 element.addEventListener('click', () => {
@@ -315,7 +386,7 @@
                 
                 this.isAnimating = true;
                 this.currentIndex = 0;
-                const points = this.generateHeartPoints(this.windowCount);
+                const points = this.generateHeartPoints();
                 
                 const addBlessing = () => {
                     if (!this.isAnimating || this.currentIndex >= points.length) {
@@ -337,7 +408,7 @@
                         if (this.isAnimating) {
                             this.animationId = requestAnimationFrame(addBlessing);
                         }
-                    }, 200);
+                    }, 150);
                 };
                 
                 this.animationId = requestAnimationFrame(addBlessing);
