@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .blessing-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .blessing-text {
+            position: absolute;
+            background: #c97df5;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #c97df5;
+            width: 140px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-wrap: break-word;
+            overflow: hidden;
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .blessing-text:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: #c97df5;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="blessing-container" id="container"></div>
+    
+    <script>
+        // 祝福语数组
+        const blessings = [
+            "好好爱自己", "记得吃水果", "保持好心情", "今天过得开心",
+            "早点休息", "别熬夜", "顺顺利利", "梦想成真",
+            "我想你了", "期待下一次见面", "每天都要元气满满", "好好吃饭",
+            "注意保暖", "王者求躺", "吃鸡有麦别踢", "无畏契约来roll",
+            "王佳琪脑子有病", "光遇跑图", "金铲铲开铲", "猛兽派对钓鱼"
+        ];
+
+        class HeartBlessing {
+            constructor() {
+                this.container = document.getElementById('container');
+                this.blessingElements = [];
+                this.isAnimating = false;
+                this.animationId = null;
+                this.blessingCount = 0;
+                this.currentIndex = 0;
+                this.windowCount = 64; // 窗口数量
+                
+                this.init();
+            }
+            
+            init() {
+                // 立即开始创建爱心窗口
+                setTimeout(() => this.start(), 100);
+            }
+            
+            generateHeartPoints(count) {
+                const points = [];
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                
+                // 保持原有的缩放比例
+                const scaleX = (screenWidth * 0.65) / 35;
+                const scaleY = (screenHeight * 0.65) / 25;
+                
+                // 计算中心点
+                const centerX = screenWidth / 2;
+                const centerY = screenHeight / 2;
+                
+                for (let i = 0; i < count; i++) {
+                    const t = 2 * Math.PI * i / count;
+                    
+                    // 保持原有的心形方程
+                    const x = 16 * Math.pow(Math.sin(t), 3);
+                    const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+                    
+                    const screenX = x * scaleX + centerX;
+                    const screenY = -y * scaleY + centerY;
+                    
+                    points.push({ x: screenX, y: screenY });
+                }
+                return points;
+            }
+            
+            createBlessingElement(blessing, x, y) {
+                const element = document.createElement('div');
+                element.className = 'blessing-text';
+                element.textContent = blessing;
+                
+                // 计算位置，使元素中心对准坐标点
+                const elementWidth = 140;
+                const elementHeight = 70;
+                
+                element.style.left = `${x - elementWidth/2}px`;
+                element.style.top = `${y - elementHeight/2}px`;
+                
+                // 添加关闭功能
+                element.addEventListener('click', () => {
+                    element.style.transform = 'scale(0)';
+                    element.style.opacity = '0';
+                    setTimeout(() => {
+                        element.remove();
+                        this.blessingElements = this.blessingElements.filter(el => el !== element);
+                    }, 300);
+                });
+                
+                this.container.appendChild(element);
+                
+                // 添加出现动画
+                setTimeout(() => {
+                    element.style.transform = 'scale(1)';
+                    element.style.opacity = '0.9';
+                }, 10);
+                
+                return element;
+            }
+            
+            start() {
+                if (this.isAnimating) return;
+                
+                this.isAnimating = true;
+                this.currentIndex = 0;
+                const points = this.generateHeartPoints(this.windowCount);
+                
+                const addBlessing = () => {
+                    if (!this.isAnimating || this.currentIndex >= points.length) {
+                        this.stop();
+                        return;
+                    }
+                    
+                    const point = points[this.currentIndex];
+                    const blessing = blessings[Math.floor(Math.random() * blessings.length)];
+                    const element = this.createBlessingElement(blessing, point.x, point.y);
+                    
+                    this.blessingElements.push(element);
+                    this.blessingCount++;
+                    
+                    this.currentIndex++;
+                    
+                    // 保持原有的创建速度
+                    setTimeout(() => {
+                        if (this.isAnimating) {
+                            this.animationId = requestAnimationFrame(addBlessing);
+                        }
+                    }, 50);
+                };
+                
+                this.animationId = requestAnimationFrame(addBlessing);
+            }
+            
+            stop() {
+                this.isAnimating = false;
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+            }
+        }
+
+        // 页面加载完成后立即初始化
+        window.addEventListener('load', () => {
+            new HeartBlessing();
+        });
+    </script>
+</body>
+</html>
